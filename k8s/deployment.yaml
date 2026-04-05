@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gcp-pubsub-subscriber
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gcp-pubsub-subscriber
+  template:
+    metadata:
+      labels:
+        app: gcp-pubsub-subscriber
+    spec:
+      serviceAccountName: gcp-pubsub-subscriber-sa
+      terminationGracePeriodSeconds: 60
+      containers:
+        - name: server
+          image: IMAGE_PLACEHOLDER
+          ports:
+            - containerPort: 8080
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "256Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+          envFrom:
+            - configMapRef:
+                name: gcp-pubsub-subscriber-config
+          env:
+            - name: GCP_PROJECT_ID
+              valueFrom:
+                configMapKeyRef:
+                  name: gcp-pubsub-subscriber-config
+                  key: GCP_PROJECT_ID
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-credentials
+                  key: password

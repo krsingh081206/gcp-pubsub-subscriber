@@ -1,0 +1,48 @@
+steps:
+  # 1. Build the container image
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'build'
+      - '-t'
+      - '${_GKE_LOCATION}-docker.pkg.dev/${PROJECT_ID}/${_AR_REPO}/gcp-pubsub-subscriber:$COMMIT_SHA'
+      - '.'
+    id: 'Build Docker Image'
+
+  # 2. Push the container image to Artifact Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'push'
+      - '${_GKE_LOCATION}-docker.pkg.dev/${PROJECT_ID}/${_AR_REPO}/gcp-pubsub-subscriber:$COMMIT_SHA'
+    id: 'Push to Artifact Registry'
+
+  # 3. Update Kubernetes deployment manifest with the new image
+  - name: 'gcr.io/cloud-builders/gcloud'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        sed -i "s|IMAGE_PLACEHOLDER|${_GKE_LOCATION}-docker.pkg.dev/${PROJECT_ID}/${_AR_REPO}/gcp-pubsub-subscriber:$COMMIT_SHA|g" k8s/deployment.yaml
+        sed -i "s|GCP_PROJECT_ID_PLACEHOLDER|${PROJECT_ID}|g" k8s/configmap.yaml
+    id: 'Update Manifests'
+
+  # 4. Deploy to GKE
+  - name: 'gcr.io/cloud-builders/gke-deploy'
+    args:
+      - 'run'
+      - '--filename=k8s/'
+      - '--location=${_GKE_LOCATION}'
+      - '--cluster=${_GKE_CLUSTER}'
+    id: 'Deploy to GKE'
+
+images:
+  - '${_GKE_LOCATION}-docker.pkg.dev/${PROJECT_ID}/${_AR_REPO}/gcp-pubsub-subscriber:$COMMIT_SHA'
+
+options:
+  logging: CLOUD_LOGGING_ONLY
+
+substitutions:
+  _GKE_CLUSTER: 'your-gke-cluster-name' # e.g., 'my-cluster'
+  _GKE_LOCATION: 'your-gke-cluster-location' # e.g., 'us-central1-c'
+  _AR_REPO: 'your-artifact-registry-repo' # e.g., 'my-repo'
+
+timeout: '1200s' # 20 minutes

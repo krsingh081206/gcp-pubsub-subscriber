@@ -1,0 +1,21 @@
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: gcp-pubsub-subscriber-hpa
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: gcp-pubsub-subscriber
+  minReplicas: 1
+  maxReplicas: 5
+  metrics:
+    - type: External
+      external:
+        metric:
+          name: pubsub.googleapis.com|subscription|num_undelivered_messages
+          selector:
+            metric.labels.subscription_id: "order-events-sub"
+        target:
+          type: AverageValue
+          averageValue: "10"

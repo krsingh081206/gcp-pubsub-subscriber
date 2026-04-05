@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: gcp-pubsub-subscriber-config
+data:
+  GCP_PROJECT_ID: "GCP_PROJECT_ID_PLACEHOLDER"
+  GCP_SUBSCRIPTION_ID: "order-events-sub"
+  LOG_LEVEL: "info"
