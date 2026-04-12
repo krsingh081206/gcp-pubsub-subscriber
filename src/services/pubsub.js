@@ -4,7 +4,9 @@ const logger = require('./logger');
 const { processOrder } = require('../controllers/orderController');
 
 const pubSubClient = new PubSub({ projectId: config.gcp.projectId });
-const subscription = pubSubClient.subscription(config.gcp.subscriptionId);
+const subscription = pubSubClient.subscription(config.gcp.subscriptionId, {
+  flowControl: config.gcp.flowControl,
+});
 
 const messageHandler = async (message) => {
   try {
@@ -31,7 +33,9 @@ const startSubscriber = () => {
     logger.error('Received error from Pub/Sub subscription.', { error });
   });
 
-  logger.info(`Listening for messages on subscription: ${subscription.name}`);
+  logger.info(`Listening for messages on subscription: ${subscription.name}`, {
+    flowControl: config.gcp.flowControl,
+  });
 };
 
 const stopSubscriber = async () => {

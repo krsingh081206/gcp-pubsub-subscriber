@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: order-subscriber
+  namespace: demo # Or your target namespace
+  labels:
+    app: order-subscriber
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: order-subscriber
+  template:
+    metadata:
+      labels:
+        app: order-subscriber
+    spec:
+      terminationGracePeriodSeconds: 60 # Allow time for graceful shutdown and message flushing
+      containers:
+        - name: order-subscriber
+          # The image will be updated by the Cloud Build pipeline
+          image: pubsub-order-subscriber
+          imagePullPolicy: IfNotPresent
+          resources:
+            requests:
+              cpu: "250m"
+              memory: "256Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+          envFrom:
+            - configMapRef:
+                name: order-subscriber-config
+            - secretRef:
+                name: order-subscriber-secret

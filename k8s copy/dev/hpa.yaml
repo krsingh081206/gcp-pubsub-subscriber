@@ -2,11 +2,12 @@ apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
   name: gcp-pubsub-subscriber-hpa
+  namespace: demo
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: gcp-pubsub-subscriber
+    name: order-subscriber
   minReplicas: 1
   maxReplicas: 5
   metrics:

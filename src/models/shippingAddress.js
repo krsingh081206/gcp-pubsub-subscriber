@@ -25,6 +25,7 @@ module.exports = (sequelize) => {
     {
       sequelize,
       modelName: 'ShippingAddress',
+      tableName: 'shipping_addresses',
       timestamps: false,
     }
   );

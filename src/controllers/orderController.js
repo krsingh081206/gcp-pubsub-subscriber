@@ -1,5 +1,8 @@
 const { sequelize, Customer, Order, OrderItem, ShippingAddress } = require('../models');
+const config = require('../config');
 const logger = require('../services/logger');
+
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 /**
  * Processes and persists an order event from a Pub/Sub message.
@@ -9,10 +12,11 @@ const logger = require('../services/logger');
  */
 const processOrder = async (orderData) => {
   const { orderId, timestamp, customer, items, totalAmount, shippingAddress } = orderData;
+  const normalizedOrderId = String(orderId);
 
-  const existingOrder = await Order.findByPk(orderId);
+  const existingOrder = await Order.findByPk(normalizedOrderId);
   if (existingOrder) {
-    logger.warn(`Order [${orderId}] already exists. Skipping processing.`);
+    logger.warn(`Order [${normalizedOrderId}] already exists. Skipping processing.`);
     return;
   }
 
@@ -27,7 +31,7 @@ const processOrder = async (orderData) => {
 
     const orderRecord = await Order.create(
       {
-        id: orderId,
+        id: normalizedOrderId,
         timestamp,
         totalAmount,
         customerId: customerRecord.id,
@@ -49,11 +53,16 @@ const processOrder = async (orderData) => {
     }));
     await OrderItem.bulkCreate(orderItems, { transaction });
 
+    if (config.processingDelayMs > 0) {
+      logger.info(`Holding transaction open for ${config.processingDelayMs}ms for order [${normalizedOrderId}].`);
+      await sleep(config.processingDelayMs);
+    }
+
     await transaction.commit();
-    logger.info(`Successfully processed and persisted order [${orderId}].`);
+    logger.info(`Successfully processed and persisted order [${normalizedOrderId}].`);
   } catch (error) {
     await transaction.rollback();
-    logger.error(`Failed to process order [${orderId}]. Rolling back transaction.`, {
+    logger.error(`Failed to process order [${normalizedOrderId}]. Rolling back transaction.`, {
       error: error.message,
       stack: error.stack,
       orderData,
