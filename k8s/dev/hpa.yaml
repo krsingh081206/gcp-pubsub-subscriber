@@ -4,19 +4,20 @@ metadata:
   name: gcp-pubsub-subscriber-hpa
   namespace: demo
 spec:
+  minReplicas: 1
+  maxReplicas: 5
+  metrics:
+  - external:
+      metric:
+       name: pubsub.googleapis.com|subscription|num_undelivered_messages
+       selector:
+         matchLabels:
+           resource.labels.subscription_id: order-events-sub
+      target:
+        type: AverageValue
+        averageValue: 10
+    type: External
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
     name: order-subscriber
-  minReplicas: 1
-  maxReplicas: 5
-  metrics:
-    - type: External
-      external:
-        metric:
-          name: pubsub.googleapis.com|subscription|num_undelivered_messages
-          selector:
-            metric.labels.subscription_id: "order-events-sub"
-        target:
-          type: AverageValue
-          averageValue: "10"
