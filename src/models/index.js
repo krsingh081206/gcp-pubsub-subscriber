@@ -8,7 +8,7 @@ const sequelize = new Sequelize(config.db.name, config.db.user, config.db.passwo
   dialect: 'postgres',
   logging: (message) => logger.debug(message),
   pool: {
-    max: 5,
+    max: 200,
     min: 0,
     acquire: 30000,
     idle: 10000,

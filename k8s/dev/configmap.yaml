@@ -6,11 +6,9 @@ metadata:
 data:
   # The ID of your Pub/Sub topic
   GCP_SUBSCRIPTION_ID: "order-events-sub"
-  # The interval in milliseconds to publish a new message
-  PUBLISH_INTERVAL_MS: "2000"
   # Your Google Cloud Project ID
   GCP_PROJECT_ID: "gcp-poc-app-dev"
   PROCESSING_DELAY_MS: "0"
-  GCP_SUBSCRIPTION_FLOW_MAX_MESSAGES: "5"
+  GCP_SUBSCRIPTION_FLOW_MAX_MESSAGES: "200"
   GCP_SUBSCRIPTION_FLOW_MAX_BYTES: "10485760"
   GCP_SUBSCRIPTION_FLOW_ALLOW_EXCESS_MESSAGES: "false"
