@@ -6,6 +6,8 @@ module.exports = (sequelize) => {
       this.hasMany(models.Order, {
         foreignKey: 'customerId',
         as: 'orders',
+        onDelete: 'SET NULL',
+        onUpdate: 'CASCADE',
       });
     }
   }
@@ -13,8 +15,8 @@ module.exports = (sequelize) => {
   Customer.init(
     {
       id: {
-        type: DataTypes.UUID,
-        defaultValue: DataTypes.UUIDV4,
+        type: DataTypes.BIGINT,
+        autoIncrement: true,
         primaryKey: true,
       },
       name: {

@@ -6,7 +6,7 @@ This project is a **Order Event Subscriber** backend built with Node.js and the 
 
 ```json
 {
-  "orderId": "9fa0b37b-b559-4173-b49b-b806b1f8145d",
+  "orderId": 10001,
   "timestamp": "2026-04-05T16:11:44.728Z",
   "customer": {
     "name": "Hannah Cole",
@@ -44,7 +44,7 @@ This project is a **Order Event Subscriber** backend built with Node.js and the 
 
 The application is designed to be deployed on Google Kubernetes Engine (GKE) and adheres to 12-factor app principles, including configuration via environment variables, structured logging, and stateless processes.
 
-The order events consumed by this application are intended to be  persisted  into a database like PostgreSQL. The subscriber application should ensure idempotent processing of order events.
+The order events consumed by this application are intended to be  persisted  into a database like PostgreSQL. The subscriber application should ensure idempotent processing of order events when a numeric `orderId` is provided by the message producer.
 
 ## Core Features
 

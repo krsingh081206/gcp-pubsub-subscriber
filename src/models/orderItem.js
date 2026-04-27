@@ -6,6 +6,8 @@ module.exports = (sequelize) => {
       this.belongsTo(models.Order, {
         foreignKey: 'orderId',
         as: 'order',
+        onDelete: 'SET NULL',
+        onUpdate: 'CASCADE',
       });
     }
   }
@@ -13,7 +15,7 @@ module.exports = (sequelize) => {
   OrderItem.init(
     {
       id: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.BIGINT,
         autoIncrement: true,
         primaryKey: true,
       },
@@ -21,6 +23,16 @@ module.exports = (sequelize) => {
       productName: DataTypes.STRING,
       quantity: DataTypes.INTEGER,
       price: DataTypes.DECIMAL(10, 2),
+      orderId: {
+        type: DataTypes.BIGINT,
+        allowNull: true,
+        references: {
+          model: 'orders',
+          key: 'id',
+        },
+        onDelete: 'SET NULL',
+        onUpdate: 'CASCADE',
+      },
     },
     {
       sequelize,

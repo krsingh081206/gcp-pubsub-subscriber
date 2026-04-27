@@ -3,8 +3,7 @@ const logger = require('./logger');
 
 const connectDatabase = async () => {
   await db.sequelize.authenticate();
-  await db.sequelize.sync();
-  logger.info('Database connection established and models synchronized.');
+  logger.info('Database connection established.');
 };
 
 const closeDatabase = async () => {
