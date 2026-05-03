@@ -23,4 +23,7 @@ yarn-error.log*
 .env.test.local
 .env.production.local
 .GEMINI.md
+ARTICLE.md
+diagrams
+.kiro
 .codex
