@@ -5,7 +5,7 @@ metadata:
   namespace: demo
 spec:
   minReplicas: 1
-  maxReplicas: 5
+  maxReplicas: 10
   metrics:
   - external:
       metric:
